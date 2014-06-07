@@ -23,19 +23,19 @@ class Cut():
         '''
         sin_of_angle = 1/sqrt(1+8*(self.error/self.radius)*(self.radius**2/self.depth**2))
         return sin_of_angle
-
-class Bit():
-    def __init__(self,radius,angle,sin_of_angle):
-        self.radius = 
-        self.angle = angle
-        self.sin_of_angle = sin_of_angle
     
-    def get_bit_radius(self,cut_radius,cut_depth,sin_of_angle):
+    def get_bit_radius(self):
         '''
         r = R * ((2+(D/R)*((1/sin(alpha)**2)-1)/(2/sin(alpha))
         '''
-        bit_radius = cut_radius * ((2+(cut_depth/cut_radius)*((1/sin_of_angle**2)-1))/(2/sin_of_angle))
+        bit_radius = self.radius * ((2+(self.depth/self.radius)*((1/self.sin_of_angle**2)-1))/(2/self.sin_of_angle))
         return bit_radius
+
+class Bit():
+    def __init__(self,radius,angle,sin_of_angle):
+        self.radius = radius
+        self.angle = angle
+        self.sin_of_angle = sin_of_angle
     
     def get_bit_angle(self,cut_depth,bit_radius,cut_radius):
         '''
@@ -45,7 +45,7 @@ class Bit():
         angle = round(degrees(asin(sin_of_angle)))
         return angle
     
-    def adjust_bit(self,radius):
+    def adjust_bit(self):
         '''
         round bit radius down to nearest 1/8th of an inch
         '''
@@ -63,7 +63,7 @@ def get_degrees(sin_of_angle):
             
 new_cut = Cut(1,6)
 angle = get_degrees(new_cut.get_sin_of_angle())
-bit_radius = bit.get_bit_radius(new_cut.radius,new_cut.depth,new_cut.get_sin_of_angle)
+bit_radius = new_cut.get_bit_radius()
 print angle
 print bit_radius
 
