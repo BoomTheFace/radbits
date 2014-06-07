@@ -11,7 +11,7 @@ from math import asin
 from math import degrees
 
 class Cut():
-    def __init__(self,depth,radius,error,sin_of_angle=0.0):
+    def __init__(self,depth,radius,error=0.01,sin_of_angle=0.0):
         self.depth = depth
         self.radius = radius
         self.error = error
@@ -21,12 +21,12 @@ class Cut():
         '''
         sin alpha = 1/sqrt(1+8*(E/R)*(R**2/D**2)
         '''
-        sin_of_angle = 1/sqrt(1+8*(self.error/self.radius)*(self.error**2/self.depth**2))
+        sin_of_angle = 1/sqrt(1+8*(self.error/self.radius)*(self.radius**2/self.depth**2))
         return sin_of_angle
 
 class Bit():
     def __init__(self,radius,angle,sin_of_angle):
-        self.radius = radius
+        self.radius = 
         self.angle = angle
         self.sin_of_angle = sin_of_angle
     
@@ -53,3 +53,17 @@ class Bit():
             return radius
         else:
             radius = (int(radius * 8)+1)/8
+            
+def get_degrees(sin_of_angle):
+    '''
+    convert sin of angle into degrees and round to nearest degree
+    '''
+    angle_in_degrees = round(degrees(asin(sin_of_angle)))
+    return angle_in_degrees
+            
+new_cut = Cut(1,6)
+angle = get_degrees(new_cut.get_sin_of_angle())
+bit_radius = bit.get_bit_radius(new_cut.radius,new_cut.depth,new_cut.get_sin_of_angle)
+print angle
+print bit_radius
+
