@@ -49,10 +49,11 @@ class Bit():
         '''
         round bit radius down to nearest 1/8th of an inch
         '''
-        if radius % 8 == 0:
-            return radius
+        if self.radius % 8 == 0:
+            return self.radius
         else:
-            radius = (int(radius * 8)+1)/8
+            radius = (int(self.radius * 8)+1)/8
+        return radius
             
 def get_degrees(sin_of_angle):
     '''
@@ -62,8 +63,9 @@ def get_degrees(sin_of_angle):
     return angle_in_degrees
             
 new_cut = Cut(1,6)
-angle = get_degrees(new_cut.get_sin_of_angle())
-bit_radius = new_cut.get_bit_radius()
-print angle
-print bit_radius
+new_bit = Bit(new_cut.get_bit_radius, get_degrees(new_cut.get_sin_of_angle), new_cut.get_sin_of_angle)
+
+print new_bit.angle
+print new_bit.radius
+
 
