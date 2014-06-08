@@ -10,62 +10,51 @@ from math import sqrt
 from math import asin
 from math import degrees
 
-class Cut():
-    def __init__(self,depth,radius,error=0.01,sin_of_angle=0.0):
-        self.depth = depth
-        self.radius = radius
-        self.error = error
-        self.sin_of_angle = self.get_sin_of_angle()
-    
-    def get_sin_of_angle(self):
-        '''
-        sin alpha = 1/sqrt(1+8*(E/R)*(R**2/D**2)
-        '''
-        sin_of_angle = 1/sqrt(1+8*(self.error/self.radius)*(self.radius**2/self.depth**2))
-        return sin_of_angle
-    
-    def get_bit_radius(self):
-        '''
-        r = R * ((2+(D/R)*((1/sin(alpha)**2)-1)/(2/sin(alpha))
-        '''
-        bit_radius = self.radius * ((2+(self.depth/self.radius)*((1/self.sin_of_angle**2)-1))/(2/self.sin_of_angle))
-        return bit_radius
+cut_radius = float(input ("Enter cut radius: "))
+cut_depth = float(input ("Enter cut depth: "))
 
-class Bit():
-    def __init__(self,radius,angle,sin_of_angle):
-        self.radius = radius
-        self.angle = angle
-        self.sin_of_angle = sin_of_angle
-    
-    def get_bit_angle(self,cut_depth,bit_radius,cut_radius):
-        '''
-        sin(alpha) = (D/r)/(1-sqrt(1-2*(R*D/r**2)+(D/r)**2))
-        '''
-        sin_of_angle = (cut_depth/bit_radius)/(1-sqrt(1-2*(cut_radius*cut_depth/bit_radius**2)+(cut_depth/bit_radius)**2))
-        angle = round(degrees(asin(sin_of_angle)))
-        return angle
-    
-    def adjust_bit(self):
-        '''
-        round bit radius down to nearest 1/8th of an inch
-        '''
-        if self.radius % 8 == 0:
-            return self.radius
-        else:
-            radius = (int(self.radius * 8)+1)/8
-        return radius
+def MinimumSinOfAngle(cut_depth,cut_radius,ERROR=0.01):
+    minimum_sin_of_angle = 1/(sqrt(1+8*(ERROR/cut_radius)*(cut_radius**2/cut_depth**2)))
+    return minimum_sin_of_angle
+
+def GetBitRadius(cut_radius,cut_depth,minimum_sin_of_angle):
+    bit_radius = cut_radius*((2+(cut_depth/cut_radius)*((1/minimum_sin_of_angle**2)-1))/(2/minimum_sin_of_angle))
+    bit_radius = int(bit_radius * 8+1)/float(8)
+    while bit_radius >= cut_radius:
+        bit_radius -= .125    
+    return bit_radius
+
+def GetBitAngle(cut_depth,cut_radius,bit_radius):
+    try:
+        try:
+            bit_angle = (cut_depth/bit_radius)/(1-sqrt(1-2*(cut_radius*cut_depth/bit_radius**2)+(cut_depth/bit_radius)**2))
+            bit_angle = GetAngleInDegrees(bit_angle)
+        except ZeroDivisionError:
+            print cut_depth, cut_radius, bit_radius
+            bit_angle = bit_radius/cut_radius
+            bit_angle = round(degrees(asin(bit_angle)))          
+        return bit_angle
             
-def get_degrees(sin_of_angle):
-    '''
-    convert sin of angle into degrees and round to nearest degree
-    '''
+    except ValueError:
+        bit_angle = bit_radius/cut_radius
+        bit_angle = round(degrees(asin(bit_angle)))
+    return bit_angle
+
+def GetAngleInDegrees(sin_of_angle):
     angle_in_degrees = round(degrees(asin(sin_of_angle)))
     return angle_in_degrees
-            
-new_cut = Cut(1,6)
-new_bit = Bit(new_cut.get_bit_radius, get_degrees(new_cut.get_sin_of_angle), new_cut.get_sin_of_angle)
-
-print new_bit.angle
-print new_bit.radius
 
 
+minimum_sin_of_angle = MinimumSinOfAngle(cut_depth,cut_radius)
+bit_radius = GetBitRadius(cut_radius,cut_depth,minimum_sin_of_angle)
+angle_in_degrees = GetAngleInDegrees(minimum_sin_of_angle)
+bit_angle = GetBitAngle(cut_depth, cut_radius, bit_radius)
+
+while bit_angle > 45:
+    bit_radius -= .125
+    bit_angle = GetBitAngle(cut_depth,cut_radius,bit_radius)
+
+print "Bit angle: ",bit_angle
+print "Bit radius: ",bit_radius
+
+input("Press <enter> to quit.")
