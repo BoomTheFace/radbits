@@ -21,3 +21,5 @@ new_bit.get_sin_of_bit_angle(new_cut.radius, new_cut.depth)
 
 print "Bit radius: " ,new_bit.rational_num
 print "Bit angle: " ,new_bit.angle
+
+input("Press <enter> to quit.")
